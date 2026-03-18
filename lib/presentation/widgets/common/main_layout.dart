@@ -171,19 +171,18 @@ class _SideNavigation extends ConsumerWidget {
             return _SideNavItem(item: item, isActive: isActive);
           }),
           const Spacer(),
-          // زر تسجيل الخروج
+          // زر الملف الشخصي وتغيير كلمة المرور
           if (profile != null) ...[
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 3),
               child: Material(
-                color: Colors.red.withOpacity(0.15),
+                color: location.startsWith('/profile')
+                    ? Colors.white.withOpacity(0.2)
+                    : Colors.transparent,
                 borderRadius: BorderRadius.circular(10),
                 child: InkWell(
                   borderRadius: BorderRadius.circular(10),
-                  onTap: () async {
-                    await ref.read(authNotifierProvider.notifier).signOut();
-                    context.go('/login');
-                  },
+                  onTap: () => context.go('/profile'),
                   child: Padding(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 16,
@@ -191,12 +190,20 @@ class _SideNavigation extends ConsumerWidget {
                     ),
                     child: Row(
                       children: [
-                        Icon(Icons.logout, color: Colors.red, size: 20),
+                        Icon(
+                          Icons.manage_accounts_rounded,
+                          color: location.startsWith('/profile')
+                              ? Colors.white
+                              : Colors.white70,
+                          size: 20,
+                        ),
                         const SizedBox(width: 12),
                         Text(
-                          'تسجيل الخروج',
+                          'الملف الشخصي',
                           style: GoogleFonts.cairo(
-                            color: Colors.red,
+                            color: location.startsWith('/profile')
+                                ? Colors.white
+                                : Colors.white70,
                             fontSize: 13,
                           ),
                         ),
@@ -328,6 +335,15 @@ class _BottomNavigation extends StatelessWidget {
     return NavigationBar(
       backgroundColor: AppTheme.primaryColor,
       indicatorColor: Colors.white.withOpacity(0.2),
+      labelTextStyle: WidgetStateProperty.resolveWith((states) {
+        return GoogleFonts.cairo(
+          color: Colors.white,
+          fontSize: 12,
+          fontWeight: states.contains(WidgetState.selected)
+              ? FontWeight.bold
+              : FontWeight.normal,
+        );
+      }),
       selectedIndex: _getIndex(location),
       onDestinationSelected: (i) {
         switch (i) {
@@ -341,7 +357,7 @@ class _BottomNavigation extends StatelessWidget {
             context.go('/orders');
             break;
           case 3:
-            context.go('/about');
+            context.go('/profile');
             break;
         }
       },
@@ -368,9 +384,15 @@ class _BottomNavigation extends StatelessWidget {
           label: 'الطلبات',
         ),
         NavigationDestination(
-          icon: const Icon(Icons.info_outline_rounded, color: Colors.white70),
-          selectedIcon: const Icon(Icons.info_rounded, color: Colors.white),
-          label: 'عن المطور',
+          icon: const Icon(
+            Icons.account_circle_outlined,
+            color: Colors.white70,
+          ),
+          selectedIcon: const Icon(
+            Icons.account_circle_rounded,
+            color: Colors.white,
+          ),
+          label: 'حسابي',
         ),
       ],
     );
@@ -379,7 +401,7 @@ class _BottomNavigation extends StatelessWidget {
   int _getIndex(String location) {
     if (location.startsWith('/customers')) return 1;
     if (location.startsWith('/orders')) return 2;
-    if (location.startsWith('/about')) return 3;
+    if (location.startsWith('/profile')) return 3;
     return 0;
   }
 }

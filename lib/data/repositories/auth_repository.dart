@@ -42,6 +42,7 @@ class AuthRepository {
       throw Exception('اسم المستخدم أو كلمة المرور غير صحيحة');
     }
 
+    // login_user تُرجع avatar_url مباشرة بعد migration 005
     return UserProfileModel.fromCustomUsers(rows.first as Map<String, dynamic>);
   }
 
@@ -102,9 +103,44 @@ class AuthRepository {
         .toList();
   }
 
+  // ── تحديث اسم المستخدم وصورته ──────────────────────────
+  Future<void> updateUserProfile({
+    required String userId,
+    required String fullName,
+    String? avatarUrl,
+  }) async {
+    final data = <String, dynamic>{
+      'full_name': fullName,
+      'updated_at': DateTime.now().toIso8601String(),
+      if (avatarUrl != null) 'avatar_url': avatarUrl,
+    };
+    await _client.from('users').update(data).eq('id', userId);
+  }
+
   // ── تحديث حالة المستخدم ──────────────────────────────────
   Future<void> updateProfile(String userId, Map<String, dynamic> data) async {
     await _client.from('profiles').update(data).eq('id', userId);
+  }
+
+  // ── تغيير كلمة المرور عبر public.users ──────────────────
+  Future<void> changePasswordCustom({
+    required String userId,
+    required String oldPassword,
+    required String newPassword,
+  }) async {
+    // التحقق من كلمة المرور القديمة أولاً
+    final List<dynamic> check = await _client.rpc(
+      'verify_user_password',
+      params: {'p_user_id': userId, 'p_password': oldPassword},
+    );
+    if (check.isEmpty || check.first['valid'] != true) {
+      throw Exception('كلمة المرور القديمة غير صحيحة');
+    }
+    // تحديث كلمة المرور
+    await _client.rpc(
+      'update_user_password',
+      params: {'p_user_id': userId, 'p_new_password': newPassword},
+    );
   }
 
   // ── تغيير كلمة المرور ────────────────────────────────────

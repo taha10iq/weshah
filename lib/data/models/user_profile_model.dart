@@ -6,6 +6,7 @@ class UserProfileModel {
   final String username;
   final String role;
   final bool isActive;
+  final String? avatarUrl;
 
   const UserProfileModel({
     required this.id,
@@ -13,6 +14,7 @@ class UserProfileModel {
     required this.username,
     required this.role,
     required this.isActive,
+    this.avatarUrl,
   });
 
   bool get isAdmin => role == 'admin';
@@ -24,10 +26,10 @@ class UserProfileModel {
       username: json['username'] as String? ?? '',
       role: json['role'] as String? ?? 'employee',
       isActive: json['is_active'] as bool? ?? true,
+      avatarUrl: json['avatar_url'] as String?,
     );
   }
 
-  // للتوافق مع الكود القديم
   factory UserProfileModel.fromJson(Map<String, dynamic> json) {
     return UserProfileModel.fromCustomUsers(json);
   }
@@ -37,6 +39,7 @@ class UserProfileModel {
     'username': username,
     'role': role,
     'is_active': isActive,
+    if (avatarUrl != null) 'avatar_url': avatarUrl,
   };
 
   UserProfileModel copyWith({
@@ -44,6 +47,7 @@ class UserProfileModel {
     String? username,
     String? role,
     bool? isActive,
+    String? avatarUrl,
   }) {
     return UserProfileModel(
       id: id,
@@ -51,6 +55,7 @@ class UserProfileModel {
       username: username ?? this.username,
       role: role ?? this.role,
       isActive: isActive ?? this.isActive,
+      avatarUrl: avatarUrl ?? this.avatarUrl,
     );
   }
 }

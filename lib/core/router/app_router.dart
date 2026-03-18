@@ -13,6 +13,7 @@ import '../../presentation/screens/orders/order_form_screen.dart';
 import '../../presentation/screens/orders/order_detail_screen.dart';
 import '../../presentation/screens/about/about_screen.dart';
 import '../../presentation/screens/auth/login_screen.dart';
+import '../../presentation/screens/profile/profile_screen.dart';
 import '../../presentation/widgets/common/main_layout.dart';
 import '../../features/users/pages/user_management_page.dart';
 
@@ -110,6 +111,11 @@ GoRouter createRouter(ProviderContainer container) {
             path: '/about',
             name: 'about',
             builder: (context, state) => const AboutScreen(),
+          ),
+          GoRoute(
+            path: '/profile',
+            name: 'profile',
+            builder: (context, state) => const ProfileScreen(),
           ),
           GoRoute(
             path: '/users',

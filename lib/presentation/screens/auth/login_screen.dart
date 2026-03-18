@@ -21,6 +21,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _passwordCtrl = TextEditingController();
   bool _obscure = true;
   bool _loading = false;
+  bool _rememberMe = false;
 
   @override
   void dispose() {
@@ -38,6 +39,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         .signIn(
           username: _usernameCtrl.text.trim(),
           password: _passwordCtrl.text,
+          rememberMe: _rememberMe,
         );
 
     if (mounted) {
@@ -158,7 +160,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           // Username
                           AppTextField(
                             label: 'اسم المستخدم',
-                            hint: 'وشاح',
                             controller: _usernameCtrl,
                             keyboardType: TextInputType.text,
                             prefixIcon: const Icon(
@@ -176,7 +177,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           // Password
                           AppTextField(
                             label: 'كلمة المرور',
-                            hint: '••••••••',
                             controller: _passwordCtrl,
                             obscureText: _obscure,
                             prefixIcon: const Icon(Icons.lock_outline_rounded),
@@ -199,7 +199,39 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               return null;
                             },
                           ),
-                          const SizedBox(height: 28),
+                          const SizedBox(height: 12),
+
+                          // Remember Me
+                          Row(
+                            children: [
+                              SizedBox(
+                                width: 24,
+                                height: 24,
+                                child: Checkbox(
+                                  value: _rememberMe,
+                                  onChanged: (v) =>
+                                      setState(() => _rememberMe = v!),
+                                  activeColor: AppTheme.primaryColor,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              GestureDetector(
+                                onTap: () =>
+                                    setState(() => _rememberMe = !_rememberMe),
+                                child: Text(
+                                  'تذكرني',
+                                  style: GoogleFonts.cairo(
+                                    fontSize: 13,
+                                    color: AppTheme.textSecondary,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 20),
 
                           // Login Button
                           SizedBox(

@@ -18,6 +18,7 @@ import '../../../data/models/customer_model.dart';
 import '../../providers/order_provider.dart';
 import '../../providers/supabase_provider.dart';
 import '../../widgets/common/app_text_field.dart';
+import 'package:uuid/uuid.dart';
 
 class OrderFormScreen extends ConsumerStatefulWidget {
   final String? orderId;
@@ -200,6 +201,108 @@ class _OrderFormScreenState extends ConsumerState<OrderFormScreen>
     if (date != null) setState(() => _orderDate = date);
   }
 
+  Future<void> _showAddCustomerDialog() async {
+    final nameCtrl = TextEditingController();
+    final phoneCtrl = TextEditingController();
+    final formKey = GlobalKey<FormState>();
+    bool saving = false;
+
+    await showDialog(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setDialogState) => AlertDialog(
+          title: Text(
+            'إضافة عميل جديد',
+            style: GoogleFonts.cairo(fontWeight: FontWeight.bold),
+          ),
+          content: Form(
+            key: formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                AppTextField(
+                  label: 'الاسم الكامل *',
+                  controller: nameCtrl,
+                  validator: (v) =>
+                      (v == null || v.trim().isEmpty) ? 'الاسم مطلوب' : null,
+                ),
+                const SizedBox(height: 12),
+                AppTextField(
+                  label: 'رقم الهاتف *',
+                  controller: phoneCtrl,
+                  keyboardType: TextInputType.phone,
+                  validator: (v) =>
+                      (v == null || v.trim().isEmpty) ? 'الهاتف مطلوب' : null,
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: Text('إلغاء', style: GoogleFonts.cairo()),
+            ),
+            ElevatedButton(
+              onPressed: saving
+                  ? null
+                  : () async {
+                      if (!formKey.currentState!.validate()) return;
+                      setDialogState(() => saving = true);
+                      try {
+                        final repo = ref.read(customerRepositoryProvider);
+                        final now = DateTime.now();
+                        final newCustomer = CustomerModel(
+                          id: const Uuid().v4(),
+                          fullName: nameCtrl.text.trim(),
+                          phone: phoneCtrl.text.trim(),
+                          createdAt: now,
+                          updatedAt: now,
+                        );
+                        await repo.createCustomer(newCustomer);
+                        setState(() {
+                          _selectedCustomerId = newCustomer.id;
+                          _selectedCustomer = newCustomer;
+                          _customerSearchCtrl.text = newCustomer.fullName;
+                        });
+                        if (ctx.mounted) Navigator.pop(ctx);
+                      } catch (e) {
+                        setDialogState(() => saving = false);
+                        if (ctx.mounted) {
+                          ScaffoldMessenger.of(ctx).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                'فشل إضافة العميل: $e',
+                                style: GoogleFonts.cairo(),
+                              ),
+                              backgroundColor: AppTheme.errorColor,
+                            ),
+                          );
+                        }
+                      }
+                    },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppTheme.primaryColor,
+                foregroundColor: Colors.white,
+              ),
+              child: saving
+                  ? const SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Colors.white,
+                      ),
+                    )
+                  : Text('حفظ', style: GoogleFonts.cairo()),
+            ),
+          ],
+        ),
+      ),
+    );
+    nameCtrl.dispose();
+    phoneCtrl.dispose();
+  }
+
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) {
       _tabController.animateTo(0);
@@ -226,12 +329,22 @@ class _OrderFormScreenState extends ConsumerState<OrderFormScreen>
     Future<String?> uploadIfExists(XFile? file, String key) async {
       if (file == null) return null;
       try {
-        return await storage.uploadTextImage(
+        final url = await storage.uploadTextImage(
           orderId: tempOrderId,
           fieldKey: key,
           image: file,
         );
-      } catch (_) {
+        return url;
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('فشل رفع صورة $key: $e'),
+              backgroundColor: AppTheme.errorColor,
+              duration: const Duration(seconds: 5),
+            ),
+          );
+        }
         return null;
       }
     }
@@ -500,13 +613,39 @@ class _OrderBasicTabState extends State<_OrderBasicTab> {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            'العميل *',
-                            style: GoogleFonts.cairo(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w600,
-                              color: AppTheme.textPrimary,
-                            ),
+                          Row(
+                            children: [
+                              Text(
+                                'العميل *',
+                                style: GoogleFonts.cairo(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w600,
+                                  color: AppTheme.textPrimary,
+                                ),
+                              ),
+                              const Spacer(),
+                              TextButton.icon(
+                                onPressed: () => s._showAddCustomerDialog(),
+                                icon: const Icon(
+                                  Icons.person_add_rounded,
+                                  size: 16,
+                                ),
+                                label: Text(
+                                  'عميل جديد',
+                                  style: GoogleFonts.cairo(fontSize: 12),
+                                ),
+                                style: TextButton.styleFrom(
+                                  foregroundColor: AppTheme.primaryColor,
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 8,
+                                    vertical: 4,
+                                  ),
+                                  minimumSize: Size.zero,
+                                  tapTargetSize:
+                                      MaterialTapTargetSize.shrinkWrap,
+                                ),
+                              ),
+                            ],
                           ),
                           const SizedBox(height: 6),
                           Autocomplete<CustomerModel>(

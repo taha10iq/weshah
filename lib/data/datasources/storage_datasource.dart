@@ -70,7 +70,7 @@ class StorageDataSource {
   // ── رفع صورة نص إلى bucket text-images ──────────────────
   Future<String> uploadTextImage({
     required String orderId,
-    required String fieldKey, // e.g. 'right', 'left', 'chest', 'sash', 'cap'
+    required String fieldKey,
     required XFile image,
   }) async {
     final bytes = await image.readAsBytes();
@@ -89,5 +89,33 @@ class StorageDataSource {
         );
 
     return _client.storage.from('text-images').getPublicUrl(filePath);
+  }
+
+  // ── رفع صورة الملف الشخصي ──────────────────────────────
+  Future<String> uploadAvatar({
+    required String userId,
+    required XFile image,
+  }) async {
+    final bytes = await image.readAsBytes();
+    final ext = path.extension(image.name).isNotEmpty
+        ? path.extension(image.name)
+        : '.jpg';
+
+    // استخدام timestamp في اسم الملف لضمان تحديث الكاش دائماً
+    final ts = DateTime.now().millisecondsSinceEpoch;
+    final filePath = 'avatars/${userId}_$ts$ext';
+
+    await _client.storage
+        .from('avatars')
+        .uploadBinary(
+          filePath,
+          bytes,
+          fileOptions: FileOptions(
+            contentType: image.mimeType ?? 'image/jpeg',
+            upsert: false,
+          ),
+        );
+
+    return _client.storage.from('avatars').getPublicUrl(filePath);
   }
 }

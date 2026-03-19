@@ -31,6 +31,7 @@ class OrderDetailModel extends Equatable {
   final String? chestTextImageUrl;
   final String? sashTextImageUrl;
   final String? capTextImageUrl;
+  final String? designNotesImageUrl;
 
   const OrderDetailModel({
     required this.id,
@@ -60,6 +61,7 @@ class OrderDetailModel extends Equatable {
     this.chestTextImageUrl,
     this.sashTextImageUrl,
     this.capTextImageUrl,
+    this.designNotesImageUrl,
   });
 
   factory OrderDetailModel.fromJson(Map<String, dynamic> json) {
@@ -91,6 +93,7 @@ class OrderDetailModel extends Equatable {
       chestTextImageUrl: json['chest_text_image_url'] as String?,
       sashTextImageUrl: json['sash_text_image_url'] as String?,
       capTextImageUrl: json['cap_text_image_url'] as String?,
+      designNotesImageUrl: json['design_notes_image_url'] as String?,
     );
   }
 
@@ -122,6 +125,7 @@ class OrderDetailModel extends Equatable {
       if (chestTextImageUrl != null) 'chest_text_image_url': chestTextImageUrl,
       if (sashTextImageUrl != null) 'sash_text_image_url': sashTextImageUrl,
       if (capTextImageUrl != null) 'cap_text_image_url': capTextImageUrl,
+      if (designNotesImageUrl != null) 'design_notes_image_url': designNotesImageUrl,
     };
   }
 
@@ -153,6 +157,7 @@ class OrderDetailModel extends Equatable {
     String? chestTextImageUrl,
     String? sashTextImageUrl,
     String? capTextImageUrl,
+    String? designNotesImageUrl,
   }) {
     return OrderDetailModel(
       id: id ?? this.id,
@@ -182,6 +187,7 @@ class OrderDetailModel extends Equatable {
       chestTextImageUrl: chestTextImageUrl ?? this.chestTextImageUrl,
       sashTextImageUrl: sashTextImageUrl ?? this.sashTextImageUrl,
       capTextImageUrl: capTextImageUrl ?? this.capTextImageUrl,
+      designNotesImageUrl: designNotesImageUrl ?? this.designNotesImageUrl,
     );
   }
 

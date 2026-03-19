@@ -74,6 +74,7 @@ class _OrderFormScreenState extends ConsumerState<OrderFormScreen>
   XFile? _chestTextImage;
   XFile? _sashTextImage;
   XFile? _capTextImage;
+  XFile? _designNotesImage;
 
   bool _loading = false;
   bool get isEditing => widget.orderId != null;
@@ -354,6 +355,7 @@ class _OrderFormScreenState extends ConsumerState<OrderFormScreen>
     final chestUrl = await uploadIfExists(_chestTextImage, 'chest');
     final sashUrl = await uploadIfExists(_sashTextImage, 'sash');
     final capUrl = await uploadIfExists(_capTextImage, 'cap');
+    final designNotesUrl = await uploadIfExists(_designNotesImage, 'design_notes');
 
     // ─────────────────────────────────────────────────────────
     final totalPrice = double.tryParse(_totalPriceCtrl.text) ?? 0;
@@ -424,6 +426,7 @@ class _OrderFormScreenState extends ConsumerState<OrderFormScreen>
       chestTextImageUrl: chestUrl,
       sashTextImageUrl: sashUrl,
       capTextImageUrl: capUrl,
+      designNotesImageUrl: designNotesUrl,
     );
 
     final notifier = ref.read(orderNotifierProvider.notifier);
@@ -1228,19 +1231,6 @@ class _TextsColorsTabState extends State<_TextsColorsTab> {
                         hint: 'مثال: أسود...',
                         controller: s._capColorCtrl,
                       ),
-                      const SizedBox(height: 12),
-                      AppTextField(
-                        label: 'النص على القبعة',
-                        hint: 'اكتب النص المراد على القبعة...',
-                        controller: s._capTextCtrl,
-                        maxLines: 2,
-                      ),
-                      const SizedBox(height: 8),
-                      _ImageAttachButton(
-                        image: s._capTextImage,
-                        onPick: (f) => setState(() => s._capTextImage = f),
-                        onRemove: () => setState(() => s._capTextImage = null),
-                      ),
                     ],
                   ),
                 ),
@@ -1286,8 +1276,8 @@ class _TextsColorsTabState extends State<_TextsColorsTab> {
                       ),
                       const SizedBox(height: 12),
                       AppTextField(
-                        label: 'النص على الصدر / الوسط',
-                        hint: 'الكتابة على الصدر أو المنطقة الوسطى...',
+                        label: 'النص على ظهر الوشاح',
+                        hint: 'الكتابة على ظهر الوشاح...',
                         controller: s._chestTextCtrl,
                         maxLines: 2,
                       ),
@@ -1299,9 +1289,23 @@ class _TextsColorsTabState extends State<_TextsColorsTab> {
                             setState(() => s._chestTextImage = null),
                       ),
                       const SizedBox(height: 12),
+                      // النص على القبعة (منقول من قسم الألوان)
                       AppTextField(
-                        label: 'النص على الوشاح',
-                        hint: 'الكتابة على الوشاح...',
+                        label: 'النص على القبعة',
+                        hint: 'اكتب النص المراد على القبعة...',
+                        controller: s._capTextCtrl,
+                        maxLines: 2,
+                      ),
+                      const SizedBox(height: 8),
+                      _ImageAttachButton(
+                        image: s._capTextImage,
+                        onPick: (f) => setState(() => s._capTextImage = f),
+                        onRemove: () => setState(() => s._capTextImage = null),
+                      ),
+                      const SizedBox(height: 12),
+                      AppTextField(
+                        label: 'النص على جانب القبعة',
+                        hint: 'الكتابة على جانب القبعة...',
                         controller: s._sashTextCtrl,
                         maxLines: 2,
                       ),
@@ -1334,6 +1338,14 @@ class _TextsColorsTabState extends State<_TextsColorsTab> {
                             'أي تفاصيل إضافية على التصميم أو المتطلبات الخاصة...',
                         controller: s._designNotesCtrl,
                         maxLines: 4,
+                      ),
+                      const SizedBox(height: 8),
+                      _ImageAttachButton(
+                        image: s._designNotesImage,
+                        onPick: (f) =>
+                            setState(() => s._designNotesImage = f),
+                        onRemove: () =>
+                            setState(() => s._designNotesImage = null),
                       ),
                     ],
                   ),

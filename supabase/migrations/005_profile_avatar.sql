@@ -134,3 +134,9 @@ AS $$
 $$;
 
 GRANT EXECUTE ON FUNCTION public.login_user(TEXT, TEXT) TO anon, authenticated;
+
+-- ─────────────────────────────────────────────────────────────
+-- 6. إضافة عمود صورة ملاحظات التصميم لجدول order_details
+-- ─────────────────────────────────────────────────────────────
+ALTER TABLE public.order_details
+  ADD COLUMN IF NOT EXISTS design_notes_image_url TEXT DEFAULT NULL;

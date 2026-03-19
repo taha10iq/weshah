@@ -593,9 +593,14 @@ class _OrderBasicTab extends StatefulWidget {
   State<_OrderBasicTab> createState() => _OrderBasicTabState();
 }
 
-class _OrderBasicTabState extends State<_OrderBasicTab> {
+class _OrderBasicTabState extends State<_OrderBasicTab>
+    with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
+
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     final s = widget.state;
     final totalPrice = double.tryParse(s._totalPriceCtrl.text) ?? 0;
     final amountPaid = double.tryParse(s._amountPaidCtrl.text) ?? 0;
@@ -1007,9 +1012,14 @@ class _MeasurementsTab extends StatefulWidget {
   State<_MeasurementsTab> createState() => _MeasurementsTabState();
 }
 
-class _MeasurementsTabState extends State<_MeasurementsTab> {
+class _MeasurementsTabState extends State<_MeasurementsTab>
+    with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
+
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     final s = widget.state;
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
@@ -1171,7 +1181,7 @@ class _MeasurementsTabState extends State<_MeasurementsTab> {
                       const SizedBox(height: 6),
                       AppTextField(
                         label: '',
-                        hint: 'مثال: 2024',
+                        hint: 'مثال: 2026',
                         controller: s._graduationYearCtrl,
                         keyboardType: TextInputType.number,
                         inputFormatters: [
@@ -1200,9 +1210,14 @@ class _TextsColorsTab extends StatefulWidget {
   State<_TextsColorsTab> createState() => _TextsColorsTabState();
 }
 
-class _TextsColorsTabState extends State<_TextsColorsTab> {
+class _TextsColorsTabState extends State<_TextsColorsTab>
+    with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
+
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     final s = widget.state;
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),

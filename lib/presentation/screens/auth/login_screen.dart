@@ -275,7 +275,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
                 const SizedBox(height: 24),
                 Text(
-                  'جميع الحقوق محفوظة © 2026 - وشاح',
+                  'جميع الحقوق محفوظة © 2026 - طه سعد',
                   style: GoogleFonts.cairo(
                     color: AppTheme.textSecondary,
                     fontSize: 11,

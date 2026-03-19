@@ -355,7 +355,10 @@ class _OrderFormScreenState extends ConsumerState<OrderFormScreen>
     final chestUrl = await uploadIfExists(_chestTextImage, 'chest');
     final sashUrl = await uploadIfExists(_sashTextImage, 'sash');
     final capUrl = await uploadIfExists(_capTextImage, 'cap');
-    final designNotesUrl = await uploadIfExists(_designNotesImage, 'design_notes');
+    final designNotesUrl = await uploadIfExists(
+      _designNotesImage,
+      'design_notes',
+    );
 
     // ─────────────────────────────────────────────────────────
     final totalPrice = double.tryParse(_totalPriceCtrl.text) ?? 0;
@@ -458,10 +461,16 @@ class _OrderFormScreenState extends ConsumerState<OrderFormScreen>
         );
         context.go('/orders/$newOrderId');
       } else {
+        // عرض تفاصيل الخطأ الحقيقي من الـ state
+        final errState = ref.read(orderNotifierProvider);
+        final errMsg = errState.hasError
+            ? errState.error.toString().replaceAll('Exception: ', '')
+            : 'حدث خطأ أثناء حفظ الطلب';
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('حدث خطأ أثناء حفظ الطلب'),
+          SnackBar(
+            content: Text(errMsg),
             backgroundColor: AppTheme.errorColor,
+            duration: const Duration(seconds: 8),
           ),
         );
       }
@@ -1342,8 +1351,7 @@ class _TextsColorsTabState extends State<_TextsColorsTab> {
                       const SizedBox(height: 8),
                       _ImageAttachButton(
                         image: s._designNotesImage,
-                        onPick: (f) =>
-                            setState(() => s._designNotesImage = f),
+                        onPick: (f) => setState(() => s._designNotesImage = f),
                         onRemove: () =>
                             setState(() => s._designNotesImage = null),
                       ),

@@ -125,7 +125,8 @@ class OrderDetailModel extends Equatable {
       if (chestTextImageUrl != null) 'chest_text_image_url': chestTextImageUrl,
       if (sashTextImageUrl != null) 'sash_text_image_url': sashTextImageUrl,
       if (capTextImageUrl != null) 'cap_text_image_url': capTextImageUrl,
-      if (designNotesImageUrl != null) 'design_notes_image_url': designNotesImageUrl,
+      if (designNotesImageUrl != null)
+        'design_notes_image_url': designNotesImageUrl,
     };
   }
 

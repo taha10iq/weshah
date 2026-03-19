@@ -66,13 +66,21 @@ class CustomerRepository {
   }
 
   Future<List<CustomerModel>> searchCustomers(String query) async {
-    if (query.isEmpty) return [];
-    final data = await _client
-        .from('customers')
-        .select()
-        .or('full_name.ilike.%$query%,phone.ilike.%$query%')
-        .order('full_name')
-        .limit(20);
+    late final List<dynamic> data;
+    if (query.isEmpty) {
+      data = await _client
+          .from('customers')
+          .select()
+          .order('full_name')
+          .limit(50);
+    } else {
+      data = await _client
+          .from('customers')
+          .select()
+          .or('full_name.ilike.%$query%,phone.ilike.%$query%')
+          .order('full_name')
+          .limit(20);
+    }
     return data
         .map((json) => CustomerModel.fromJson(json as Map<String, dynamic>))
         .toList();

@@ -763,7 +763,7 @@ class _TextsColorsCard extends StatelessWidget {
               const SizedBox(height: 8),
               _TextWithImage(
                 icon: Icons.text_fields_rounded,
-                label: 'نص الصدر',
+                label: 'النص على ظهر الوشاح',
                 text: details.chestText,
                 imageUrl: details.chestTextImageUrl,
               ),
@@ -774,7 +774,7 @@ class _TextsColorsCard extends StatelessWidget {
               const SizedBox(height: 8),
               _TextWithImage(
                 icon: Icons.text_fields_rounded,
-                label: 'نص الوشاح',
+                label: 'النص على جانب القبعة',
                 text: details.sashText,
                 imageUrl: details.sashTextImageUrl,
               ),

@@ -39,6 +39,7 @@ class _OrderFormScreenState extends ConsumerState<OrderFormScreen>
   String? _selectedCustomerId;
   CustomerModel? _selectedCustomer;
   final _customerSearchCtrl = TextEditingController();
+  final _customerSearchFocus = FocusNode();
 
   // Order fields
   DateTime _orderDate = DateTime.now();
@@ -168,6 +169,7 @@ class _OrderFormScreenState extends ConsumerState<OrderFormScreen>
   void dispose() {
     _tabController.dispose();
     _customerSearchCtrl.dispose();
+    _customerSearchFocus.dispose();
     _totalPriceCtrl.dispose();
     _amountPaidCtrl.dispose();
     _orderNotesCtrl.dispose();
@@ -259,11 +261,13 @@ class _OrderFormScreenState extends ConsumerState<OrderFormScreen>
                           createdAt: now,
                           updatedAt: now,
                         );
-                        await repo.createCustomer(newCustomer);
+                        final savedCustomer = await repo.createCustomer(
+                          newCustomer,
+                        );
                         setState(() {
-                          _selectedCustomerId = newCustomer.id;
-                          _selectedCustomer = newCustomer;
-                          _customerSearchCtrl.text = newCustomer.fullName;
+                          _selectedCustomerId = savedCustomer.id;
+                          _selectedCustomer = savedCustomer;
+                          _customerSearchCtrl.text = savedCustomer.fullName;
                         });
                         if (ctx.mounted) Navigator.pop(ctx);
                       } catch (e) {
@@ -665,14 +669,18 @@ class _OrderBasicTabState extends State<_OrderBasicTab>
                             ],
                           ),
                           const SizedBox(height: 6),
-                          Autocomplete<CustomerModel>(
+                          RawAutocomplete<CustomerModel>(
+                            textEditingController: s._customerSearchCtrl,
+                            focusNode: s._customerSearchFocus,
                             displayStringForOption: (c) => c.fullName,
                             optionsBuilder: (value) async {
-                              if (value.text.length < 2) return [];
                               final repo = s.ref.read(
                                 customerRepositoryProvider,
                               );
                               try {
+                                if (value.text.isEmpty) {
+                                  return await repo.searchCustomers('');
+                                }
                                 return await repo.searchCustomers(value.text);
                               } catch (_) {
                                 return [];
@@ -682,11 +690,9 @@ class _OrderBasicTabState extends State<_OrderBasicTab>
                               s.setState(() {
                                 s._selectedCustomerId = customer.id;
                                 s._selectedCustomer = customer;
+                                s._customerSearchCtrl.text = customer.fullName;
                               });
                             },
-                            initialValue: TextEditingValue(
-                              text: s._selectedCustomer?.fullName ?? '',
-                            ),
                             fieldViewBuilder: (ctx, ctrl, fn, onSubmitted) =>
                                 TextFormField(
                                   controller: ctrl,
